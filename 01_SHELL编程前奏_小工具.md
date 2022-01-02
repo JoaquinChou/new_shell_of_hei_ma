@@ -507,9 +507,9 @@ ID897   ID666   ID982
 P.Jones S.Round L.Clip
 ~~~
 
-## 8. tr工具
+## 8. tr工具(字符串的替换和删除)
 
->  tr用于字符转换，替换和删除；主要用于<font color='orange'>删除文件中控制字符</font>或进行<font color='orange'>字符转换</font>
+>  tr用于字符转换，替换和删除；主要用于<b>删除文件中控制字符</b>或进行<b>字符转换</b>
 
 ### 语法和选项
 
@@ -532,8 +532,8 @@ P.Jones S.Round L.Clip
 **常用选项：**
 
 ```powershell
-# -d 删除字符串1中所有输入字符。
-# -s 删除所有重复出现字符序列，只保留第一个；即将重复出现字符串压缩为一个字符串
+-d # 删除字符串1中所有输入字符。
+-s # 删除所有重复出现字符序列，只保留第一个；即将重复出现字符串压缩为一个字符串
 ```
 
 **常匹配字符串：**
@@ -579,16 +579,18 @@ hello world 888
 777
 999
 
+# 1、字符串替换操作
+tr '[0-9]' '@' < 3.txt 			# 将文件中的数字替换为@符号
+tr '[a-z]' '[A-Z]' < 3.txt 		# 将文件中的小写字母替换成大写字母
+tr -s '[a-z]' < 3.txt 			# 匹配小写字母并将重复的压缩为一个
+tr -s '[a-z0-9]' < 3.txt 		# 匹配小写字母和数字并将重复的压缩为一个
 
-# tr -d '[:/]' < 3.txt 				删除文件中的:和/
-# cat 3.txt |tr -d '[:/]'			删除文件中的:和/
-# tr '[0-9]' '@' < 3.txt 			将文件中的数字替换为@符号
-# tr '[a-z]' '[A-Z]' < 3.txt 		将文件中的小写字母替换成大写字母
-# tr -s '[a-z]' < 3.txt 			匹配小写字母并将重复的压缩为一个
-# tr -s '[a-z0-9]' < 3.txt 		匹配小写字母和数字并将重复的压缩为一个
-# tr -d '[:digit:]' < 3.txt 		删除文件中的数字
-# tr -d '[:blank:]' < 3.txt 		删除水平空白
-# tr -d '[:space:]' < 3.txt 		删除所有水平和垂直空白
+# 2、字符串删除操作
+tr -d '[:/]' < 3.txt 				# 删除文件中的:和/
+cat 3.txt |tr -d '[:/]'			# 删除文件中的:和/
+tr -d '[:digit:]' < 3.txt 		# 删除文件中的数字
+tr -d '[:blank:]' < 3.txt 		# 删除水平空白
+tr -d '[:space:]' < 3.txt 		# 删除所有水平和垂直空白
 
 ~~~
 
@@ -597,14 +599,15 @@ hello world 888
 1. 使用小工具分别截取当前主机IP；截取NETMASK；截取广播地址；截取MAC地址
 
 ~~~powershell
-# ifconfig eth0|grep 'Bcast'|tr -d '[a-zA-Z ]'|cut -d: -f2,3,4
+# ifconfig eth0|grep 'Bcast'|tr -d '[a-zA-Z]'|cut -d: -f2,3,4
 10.1.1.1:10.1.1.255:255.255.255.0
-# ifconfig eth0|grep 'Bcast'|tr -d '[a-zA-Z ]'|cut -d: -f2,3,4|tr ':' '\n'
+# ifconfig eth0|grep 'Bcast'|tr -d '[a-zA-Z]'|cut -d: -f2,3,4|tr ':' '\n'
 10.1.1.1
 10.1.1.255
 255.255.255.0
 # ifconfig eth0|grep 'HWaddr'|cut -d: -f2-|cut -d' ' -f4
 00:0C:29:25:AE:54
+# 将多个空格压缩为1个，匹配所有的空格，取出以空格为分割符的最后一列
 # ifconfig eth0|grep 'HW'|tr -s ' '|cut -d' ' -f5
 00:0C:29:B4:9E:4E
 
@@ -618,9 +621,12 @@ hello world 888
 # ifconfig eth0|grep 'Bcast'|tr -d 'a-zA-Z:'|tr ' ' '\n'|grep -v '^$'
 ~~~
 
-2. 将系统中所有普通用户的用户名、密码和默认shell保存到一个文件中，要求用户名密码和默认shell之间用tab键分割
+2. 将系统中所有普通用户的用户名、密码和默认shell保存到一个文件中，要求用户名，密码，默认shell之间用tab键分割
 
 ~~~powershell
+# cp /etc/passwd passwd
+
+# 忽略root用户
 # grep 'bash$' passwd |grep -v 'root'|cut -d: -f1,2,7|tr ':' '\t' |tee abc.txt
 ~~~
 
@@ -661,9 +667,9 @@ ctrl+r	 			# 搜索历史命令
 
 ## 4、<font color='orange'>bash中的引号（重点）</font>
 
-- 双引号""   :会把引号的内容当成整体来看待，<font color='red'>允许通过$符号引用</font>其他变量值
+- 双引号""   :会把引号的内容当成整体来看待，<b><font color='red'>允许通过$符号引用</font></b>其他变量值
 - 单引号''     :会把引号的内容当成整体来看待，<font color='red'>禁止引用其他变量值</font>，shell中特殊符号都被视为普通字符
-- 反撇号``  :<font color='orange'>反撇号和$()一样</font>，引号或括号里的命令会优先执行，如果存在嵌套，反撇号不能用
+- 反撇号``  :<font color='orange'>反撇号和$()一样</font>，引号或括号里的命令会优先执行，如果<b>存在嵌套，反撇号不能用</b>
 
 ~~~powershell
 [root@MissHou  dir1]# echo "$(hostname)"
